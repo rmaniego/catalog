@@ -1,0 +1,21 @@
+Metadata-Version: 2.1
+Name: maguro
+Version: 0.0.1
+Summary: Maguro is a lightweight python package that simplifies the management of C/TSV data and files.
+Home-page: https://github.com/rmaniego/maguro
+Author: Rodney Maniego Jr.
+Author-email: rod.maniego23@gmail.com
+License: MIT
+Download-URL: https://github.com/rmaniego/maguro/archive/v1.0.tar.gz
+Description: # Maguro
+        Maguro is a lightweight python package that simplifies the management of C/TSV data and files.
+        
+Keywords: CSV,TSV,File,Storage
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown

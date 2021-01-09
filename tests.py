@@ -15,3 +15,19 @@ person.append("23")
 
 # show
 print(person.pack())
+
+# raw list
+print(person.unpack())
+
+# loop over items
+for item in person.items():
+    print(item)
+
+# remove item
+person.remove("23")
+person.append("24")
+print(person.pack())
+
+# insert item
+person.insert(1, "Dela Cruz")
+print(person.pack())
