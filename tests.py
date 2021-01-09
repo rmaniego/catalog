@@ -1,9 +1,9 @@
-from karton import Karton
+from maguro import Maguro
 
 
 ## Example #1
 print("\nTest #1")
-person = Karton("tests.csv")
+person = Maguro("tests.csv")
 
 # clear
 person.clear()

@@ -1,9 +1,9 @@
 """
     (c) 2020 Rodney Maniego Jr.
-    Karton
+    Maguro
 """
 
-class Karton:
+class Maguro:
     def __init__(self, filepath="", delimiter=",", autosave=True):
         """
             Read and prepare the JSON/list object.
