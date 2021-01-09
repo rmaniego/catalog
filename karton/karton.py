@@ -1,9 +1,9 @@
 """
     (c) 2020 Rodney Maniego Jr.
-    Catalog
+    Karton
 """
 
-class Catalog:
+class Karton:
     def __init__(self, filepath="", delimiter=",", autosave=True):
         """
             Read and prepare the JSON/list object.

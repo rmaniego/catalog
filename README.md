@@ -1,2 +1,2 @@
-# Catalog
-Coffe catalog is a lightweight python package that simplifies the management of C/TSV data and files.
+# Karton
+Karton is a lightweight python package that simplifies the management of C/TSV data and files.

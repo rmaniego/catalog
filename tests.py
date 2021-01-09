@@ -1,9 +1,9 @@
-from catalog import Catalog
+from karton import Karton
 
 
 ## Example #1
 print("\nTest #1")
-person = Catalog("tests.csv")
+person = Karton("tests.csv")
 
 # clear
 person.clear()

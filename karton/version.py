@@ -1,2 +1,2 @@
-""" catalog """
+""" karton """
 version = "0.0.1"
