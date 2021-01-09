@@ -70,17 +70,17 @@ class Maguro:
         for item in self.data:
             yield item
     
-    def contains(self, value):
+    def contains(self, item):
         """
             Gets the value of the search key from the list.
             ...
             Parameters
             ---
-            value: string
+            item: string
                 item inside the list
                 
         """
-        if item in self.data:
+        if str(item) in self.data:
             return True
         return False
     
