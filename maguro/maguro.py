@@ -6,7 +6,7 @@
 class Maguro:
     def __init__(self, filepath="", delimiter=",", autosave=True):
         """
-            Read and prepare the JSON/list object.
+            Read and prepare the list object.
             ...
             Parameters
             ---
@@ -21,6 +21,21 @@ class Maguro:
         self.delimiter = delimiter
         self.autosave = autosave
         self.data = read(filepath, delimiter)
+    
+    def load(self, data):
+        """
+            Load and replace existing data with new list.
+            ...
+            Parameters
+            ---
+            data: list or iterable object
+                a set of items that can be converted into a list
+        """
+        if iterable(data):
+            self.data = list(data)
+        if self.autosave:
+            write(self.filepath, self.data, self.delimiter)
+        return self
     
     def append(self, item):
         """ Append new item """

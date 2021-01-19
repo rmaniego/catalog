@@ -31,3 +31,8 @@ print(person.pack())
 # insert item
 person.insert(1, "Dela Cruz")
 print(person.pack())
+
+# load and replace original data with new one
+maria = ["Maria", "Concepion", "Female", "22"]
+person.load(maria)
+print(person.pack())
