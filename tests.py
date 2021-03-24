@@ -6,6 +6,10 @@ print("\nTest #1")
 person = Maguro("tests.csv")
 print(person.pack())
 
+
+person = Maguro("tests.csv", delimiter=",", encoding="utf-8")
+print(person.pack())
+
 """
 
 # clear
