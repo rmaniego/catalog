@@ -4,6 +4,7 @@ from maguro import Maguro
 ## Example #1
 print("\nTest #1")
 person = Maguro("tests.csv")
+print(person.pack())
 
 # clear
 person.clear()

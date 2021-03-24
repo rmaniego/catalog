@@ -137,9 +137,12 @@ def iterable(data):
         return False
     return True
 
-def read(filepath, delimiter):
+def read(filepath, delimiter, encoding="utf-8", retry=0):
     try:
-        with open(filepath, "r") as file:
-            return file.read().replace("\\/", "/").encode().decode('unicode_escape', 'surrogatepass').split(delimiter)
+        with open(filepath, "r", encoding=encoding) as file:
+            return file.read().split(delimiter)
     except:
+        if retry < 2:
+            retry += 1
+            return read(filepath, delimiter, encoding="latin-1", retry=retry)
         return []

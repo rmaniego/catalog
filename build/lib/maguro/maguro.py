@@ -140,6 +140,6 @@ def iterable(data):
 def read(filepath, delimiter):
     try:
         with open(filepath, "r") as file:
-            return file.read().split(delimiter)
+            return file.read().replace("\\/", "/").encode().decode('unicode_escape', 'surrogatepass').split(delimiter)
     except:
         return []
