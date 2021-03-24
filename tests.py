@@ -6,6 +6,8 @@ print("\nTest #1")
 person = Maguro("tests.csv")
 print(person.pack())
 
+"""
+
 # clear
 person.clear()
 
@@ -37,3 +39,4 @@ print(person.pack())
 maria = ["Doña Maria", "Concepion", "Female", "22"]
 person.load(maria)
 print(person.pack())
+"""

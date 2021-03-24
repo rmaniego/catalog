@@ -125,7 +125,7 @@ def write(filepath, data, delimiter):
     if filepath != "":
         if iterable(data):
             try:
-                with open(filepath, "w+") as file:
+                with open(filepath, "w+", encoding="utf-8") as file:
                     file.write(f"{delimiter}".join(data))
             except:
                 pass
@@ -137,12 +137,9 @@ def iterable(data):
         return False
     return True
 
-def read(filepath, delimiter, encoding="utf-8", retry=0):
+def read(filepath, delimiter, retry=0):
     try:
-        with open(filepath, "r", encoding=encoding) as file:
+        with open(filepath, "r", encoding="utf-8") as file:
             return file.read().split(delimiter)
     except:
-        if retry < 2:
-            retry += 1
-            return read(filepath, delimiter, encoding="latin-1", retry=retry)
         return []
