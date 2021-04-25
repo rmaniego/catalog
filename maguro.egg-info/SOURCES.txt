@@ -12,6 +12,3 @@ maguro.egg-info/PKG-INFO
 maguro.egg-info/SOURCES.txt
 maguro.egg-info/dependency_links.txt
 maguro.egg-info/top_level.txt
-maguro/__pycache__/__init__.cpython-38.pyc
-maguro/__pycache__/maguro.cpython-38.pyc
-maguro/__pycache__/version.cpython-38.pyc

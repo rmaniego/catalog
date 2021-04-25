@@ -4,7 +4,7 @@
 """
 
 class Maguro:
-    def __init__(self, filepath="", delimiter=",", autosave=True):
+    def __init__(self, filepath="", delimiter=",", encoding="utf-8", autosave=True):
         """
             Read and prepare the list object.
             ...
@@ -20,7 +20,8 @@ class Maguro:
         self.filepath = filepath
         self.delimiter = delimiter
         self.autosave = autosave
-        self.data = read(filepath, delimiter)
+        self.encoding = encoding
+        self.data = read(filepath, delimiter, encoding)
     
     def load(self, data):
         """
@@ -34,14 +35,14 @@ class Maguro:
         if iterable(data):
             self.data = list(data)
         if self.autosave:
-            write(self.filepath, self.data, self.delimiter)
+            write(self.filepath, self.data, self.delimiter, self.encoding)
         return self
     
     def append(self, item):
         """ Append new item """
         self.data.append(str(item))
         if self.autosave:
-            write(self.filepath, self.data, self.delimiter)
+            write(self.filepath, self.data, self.delimiter, self.encoding)
         return self
     
     def insert(self, index, item):
@@ -49,7 +50,7 @@ class Maguro:
         try:
             self.data.insert(int(index), str(item))
             if self.autosave:
-                write(self.filepath, self.data, self.delimiter)
+                write(self.filepath, self.data, self.delimiter, self.encoding)
         except:
             pass
         return self
@@ -66,7 +67,7 @@ class Maguro:
         try:
             self.data.pop(int(index))
             if self.autosave:
-                write(self.filepath, self.data, self.delimiter)
+                write(self.filepath, self.data, self.delimiter, self.encoding)
         except:
             pass
         return self
@@ -75,7 +76,7 @@ class Maguro:
         try:
             self.data = [x for x in self.data if x != str(item)]
             if self.autosave:
-                write(self.filepath, self.data, self.delimiter)
+                write(self.filepath, self.data, self.delimiter, self.encoding)
         except:
             pass
         return self
@@ -118,14 +119,14 @@ class Maguro:
     def clear(self):
         self.data = []
         if self.autosave:
-            write(self.filepath, self.data, self.delimiter)
+            write(self.filepath, self.data, self.delimiter, self.encoding)
         return self
 
-def write(filepath, data, delimiter):
+def write(filepath, data, delimiter, encoding="utf-8"):
     if filepath != "":
         if iterable(data):
             try:
-                with open(filepath, "w+", encoding="utf-8") as file:
+                with open(filepath, "w+", encoding=encoding) as file:
                     file.write(f"{delimiter}".join(data))
             except:
                 pass
@@ -137,9 +138,9 @@ def iterable(data):
         return False
     return True
 
-def read(filepath, delimiter, retry=0):
+def read(filepath, delimiter, encoding):
     try:
-        with open(filepath, "r", encoding="utf-8") as file:
+        with open(filepath, "r", encoding=encoding) as file:
             return file.read().split(delimiter)
     except:
         return []
