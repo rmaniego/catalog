@@ -10,8 +10,6 @@ print(person.pack())
 person = Maguro("tests.csv", delimiter=",", encoding="utf-8")
 print(person.pack())
 
-"""
-
 # clear
 person.clear()
 
@@ -43,4 +41,22 @@ print(person.pack())
 maria = ["Doña Maria", "Concepion", "Female", "22"]
 person.load(maria)
 print(person.pack())
-"""
+
+# extend list
+print("\nOriginal list:")
+groups = Maguro("groups.csv", "\n")
+groups.clear()
+groups.append("a,b,c,d,e")
+groups.append("b,c,d,e,f")
+groups.append("c,d,e,f,g")
+print(groups.pack())
+
+print("\nExtended list:")
+letters = ["c,d,e,f,g", "t,u,v,w,x", "u,v,w,x,y", "v,w,x,y,z"]
+groups.extend(letters)
+print(groups.pack())
+
+# remove dupplicates
+print("\nUnique items:")
+groups.remove_duplicates()
+print(groups.pack())

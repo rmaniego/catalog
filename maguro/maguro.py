@@ -55,6 +55,26 @@ class Maguro:
             pass
         return self
     
+    def extend(self, collection):
+        """ Extend the list """
+        try:
+            self.data.extend(list(collection))
+            if self.autosave:
+                write(self.filepath, self.data, self.delimiter, self.encoding)
+        except:
+            pass
+        return self
+    
+    def remove_duplicates(self):
+        """ Remove duplicate items """
+        try:
+            self.data = list(set(self.data))
+            if self.autosave:
+                write(self.filepath, self.data, self.delimiter, self.encoding)
+        except:
+            pass
+        return self
+    
     def unpack(self):
         """ Return raw list object """
         return self.data
@@ -141,6 +161,6 @@ def iterable(data):
 def read(filepath, delimiter, encoding):
     try:
         with open(filepath, "r", encoding=encoding) as file:
-            return file.read().split(delimiter)
+            return list(file.read().split(delimiter))
     except:
         return []

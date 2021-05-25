@@ -1,4 +1,4 @@
 """ maguro """
-from .version import version as __version__
+__version__ = "1.0.0"
 from .maguro import Maguro
 __all__ = ["maguro"]
