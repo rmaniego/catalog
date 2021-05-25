@@ -6,7 +6,7 @@ with open("README.md", "r") as f:
 setuptools.setup(
     name = 'maguro',
     packages = ["maguro"],
-    version = '1.0.1',
+    version = '1.0.2',
     license='MIT',
     description = 'Maguro is a lightweight manager for delimiter-separated values.',
     long_description=long_description,

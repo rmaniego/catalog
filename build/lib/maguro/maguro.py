@@ -3,6 +3,8 @@
     Maguro
 """
 
+import statistics
+
 class Maguro:
     def __init__(self, filepath="", delimiter=",", encoding="utf-8", autosave=True):
         """
@@ -77,11 +79,18 @@ class Maguro:
     
     def unpack(self):
         """ Return raw list object """
-        return self.data
+        try:
+            return self.data
+        except:
+            return []
     
     def pack(self):
         """ Return formmatted string """
-        return f"{self.delimiter}".join(self.data)
+        try:
+            formatted = list([str(x) for x in self.data])
+            return f"{self.delimiter}".join(formatted)
+        except:
+            return ""
     
     def pop(self, index):
         try:
@@ -101,9 +110,25 @@ class Maguro:
             pass
         return self
     
-    def items(self):
+    def sort(self, reverse=False):
+        """ Sort the list, with optional reversal """
+        self.data.sort(reverse=reverse)
+        return self
+    
+    def reverse(self):
+        """ Reverse the list """
+        self.data.reverse()
+        return self
+    
+    def items(self, sort=False, reverse=True):
         """ Loop over items """
-        for item in self.data:
+        dataset = self.data
+        try:
+            if sort:
+                dataset.sort(reverse)
+        except:
+            pass
+        for item in dataset:
             yield item
     
     def contains(self, item):
@@ -136,11 +161,65 @@ class Maguro:
         """ Count the number of entries in the list """
         return len(self.data)
     
+    def mean(self, precision=-1):
+        """ Get the average of a numeric dataset """
+        try:
+            return precise(statistics.mean(self.data), precision)
+        except:
+            return None
+    
+    def median(self, precision=-1):
+        """ Get the middle value of a numeric dataset """
+        try:
+            return precise(statistics.median(self.data), precision)
+        except:
+            return None
+    
+    def mode(self, precision=-1):
+        """ Get the most frequent value in a numeric dataset """
+        try:
+            return precise(statistics.mode(self.data), precision)
+        except:
+            return None
+    
+    def dataset_range(self, precision=-1):
+        """ Get the the difference of the min and max value of a numeric dataset """
+        try:
+            number = (max(self.data) - min(self.data))
+            return precise(number, precision)
+        except:
+            return None
+    
+    def minimum(self, precision=-1):
+        """ Get the the minimum value of a numeric dataset """
+        try:
+            return precise(min(self.data), precision)
+        except:
+            return None
+    
+    def maximum(self, precision=-1):
+        """ Get the the minimum value of a numeric dataset """
+        try:
+            return precise(max(self.data), precision)
+        except:
+            return None
+    
     def clear(self):
         self.data = []
         if self.autosave:
             write(self.filepath, self.data, self.delimiter, self.encoding)
         return self
+
+def precise(number, precision=-1):
+    try:
+        if isinstance(precision, int) and 1 <= precision <= 16:
+            if precision > 0:
+                return round(number, precision)
+        if precision == 0:
+            return round(number)
+    except:
+        pass
+    return number
 
 def write(filepath, data, delimiter, encoding="utf-8"):
     if filepath != "":
