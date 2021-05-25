@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
 Name: maguro
-Version: 0.0.9
-Summary: Maguro is a lightweight python package that simplifies the management of C/TSV data and files.
+Version: 1.0.0
+Summary: Maguro is a lightweight manager for delimiter-separated values.
 Home-page: https://github.com/rmaniego/maguro
 Author: Rodney Maniego Jr.
 Author-email: rod.maniego23@gmail.com

@@ -60,3 +60,44 @@ print(groups.pack())
 print("\nUnique items:")
 groups.remove_duplicates()
 print(groups.pack())
+
+# numeric methods
+print("\nNumeric list")
+numbers = Maguro("numbers.csv")
+numbers.clear()
+numbers.load([8.5,  0,  5,  14.2, 23.68,  -4,  -18,  12,  20])
+print("Numbers:", numbers.pack())
+print("Mean:", numbers.mean())
+print("Mean (5 decimal places):", numbers.mean(precision=5))
+print("Median:", numbers.median())
+print("Mode:", numbers.mode())
+print("Mode (whole number):", numbers.mode(precision=0))
+print("Range:", numbers.dataset_range())
+print("Minimum:", numbers.minimum())
+print("Maximum:", numbers.maximum())
+
+
+# sort list
+print("")
+numbers.sort()
+print("Sort:", numbers.pack())
+
+# reverse list
+numbers.reverse()
+print("Reverse:", numbers.pack())
+
+# reliability
+print("\nReliability")
+test = Maguro()
+test.append(1)
+test.append(-5.3)
+test.append("a")
+test.append([5])
+test.append({"hello"})
+test.append({"123": "abc"})
+test.append((True,))
+print(test.pack())
+test.sort()
+print(test.pack())
+test.reverse()
+print(test.pack())
