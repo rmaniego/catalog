@@ -161,48 +161,48 @@ class Maguro:
         """ Count the number of entries in the list """
         return len(self.data)
     
-    def mean(self, precision=-1):
+    def mean(self, precision=-1, fallback=None):
         """ Get the average of a numeric dataset """
         try:
             return precise(statistics.mean(self.data), precision)
         except:
-            return None
+            return fallback
     
-    def median(self, precision=-1):
+    def median(self, precision=-1, fallback=None):
         """ Get the middle value of a numeric dataset """
         try:
             return precise(statistics.median(self.data), precision)
         except:
-            return None
+            return fallback
     
-    def mode(self, precision=-1):
+    def mode(self, precision=-1, fallback=None):
         """ Get the most frequent value in a numeric dataset """
         try:
             return precise(statistics.mode(self.data), precision)
         except:
-            return None
+            return fallback
     
-    def dataset_range(self, precision=-1):
+    def dataset_range(self, precision=-1, fallback=None):
         """ Get the the difference of the min and max value of a numeric dataset """
         try:
             number = (max(self.data) - min(self.data))
             return precise(number, precision)
         except:
-            return None
+            return fallback
     
-    def minimum(self, precision=-1):
+    def minimum(self, precision=-1, fallback=None):
         """ Get the the minimum value of a numeric dataset """
         try:
             return precise(min(self.data), precision)
         except:
-            return None
+            return fallback
     
-    def maximum(self, precision=-1):
+    def maximum(self, precision=-1, fallback=None):
         """ Get the the minimum value of a numeric dataset """
         try:
             return precise(max(self.data), precision)
         except:
-            return None
+            return fallback
     
     def clear(self):
         self.data = []
@@ -210,7 +210,7 @@ class Maguro:
             write(self.filepath, self.data, self.delimiter, self.encoding)
         return self
 
-def precise(number, precision=-1):
+def precise(number, precision=-1, fallback=None):
     try:
         if isinstance(precision, int) and 1 <= precision <= 16:
             if precision > 0:

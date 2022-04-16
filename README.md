@@ -1,8 +1,21 @@
 # Maguro
-Maguro is a lightweight manager for delimiter-separated values.
+
+Maguro is a Python-wrapper for DSV files.
+
+Other behaviors are similar to a native Python list, the tutorial below only covers add-on features specific to Maguro.
+
+# Official Release
+
+Maguro can now be used on your Python projects through PyPi by running pip command on a Python-ready environment.
+
+pip install maguro --upgrade
+
+Current version is 1.1.0, but more updates are coming soon. Installing it will also install required packages including requests.
+
+This is compatible with Python version 3.9 or with the latest.
 
 ### package import
-from maguro import Maguro
+`from maguro import Maguro`
 
 ### basic usage
 ```python
@@ -25,15 +38,18 @@ Remove all items inside the list by using `dataset.clear()` method.
 ### add items
 Use `dataset.append(value)` to add new item in the list.
 
+
+### add only if unique
+Use `dataset.append(value, unique=True)` to add if item is not yet in the list.
+
 ### sorting
 Use `dataset.sort()` to sort the list alphabetically.
-Optional parameter: `reverse` = True | False *(default)*
 
 ### reverse
 Use `dataset.reverse()` to reverse the list.
 
 ### remove item
-Use `dataset.pop(value)` to to remove the first occurence in the list.
+Use `dataset.pop(index)` to to remove the first occurence in the list.
 
 ### to formatted string
 Return a formatted string, concatenated by the specificied delimiter, by using `dataset.pack()` method.
@@ -42,17 +58,8 @@ Return a formatted string, concatenated by the specificied delimiter, by using `
 Return a raw list (of `list` data type) by using `dataset.unpack()` method.
 
 ### loop over items
-When looping over a Maguro dataset, use `.items()` method to yield one item at a time.
-Sort list: `sort` True | False *(default)*
-Reverse list: `reverse`: True | False *(default)*
 ```python
-for item in dataset.items():
-    print(item)
-
-for item in dataset.items(sort=True):
-    print(item)
-
-for item in dataset.items(sort=True, reverse=True):
+for item in dataset:
     print(item)
 ```
 
@@ -68,30 +75,34 @@ Usage: `dataset.insert(index, value)`
 Loading new data into a Maguro object will replace previous contents.
 Usage: `dataset.load(iterable)`
 
-
 ### extend list
 Extending original lists follows the same list syntax.
 Usage: `dataset.extend(iterable)`
 
-
 ### remove duplicates
 Maguro leverages Python `list(set())` casting to remove duplicates.
-Usage: `dataset.remove_duplicates()`
+Usage: `dataset.distinct()`
 
-### numeric methods
-The items in the dataset must be an integer or a float to get a valid result. The basic usage is `dataset.method()` or use `dataset.method(precision=2`) to define the number of decimal places.
-
-**precision** = -1 (default), 0 = integer, 1 - 16 float
-
+### Creating 2D arrays
 ```python
-numbers = Maguro("numbers.csv")
-numbers.load([8.5,  0,  5,  14.2, 23.68,  -4,  -18,  12,  20])
-print("Mean:", numbers.mean())
-print("Mean (5 decimal places):", numbers.mean(precision=5))
-print("Median:", numbers.median())
-print("Mode:", numbers.mode())
-print("Mode (whole number):", numbers.mode(precision=0))
-print("Range:", numbers.dataset_range())
-print("Minimum:", numbers.minimum())
-print("Maximum:", numbers.maximum())
-```
+test = Maguro("temp/03b-2d.csv", delimiter=",", newline="\n")
+test.append(["Juan", 23, "Male", 72, 168, False])
+test.append(["Pedro", 22, "Male", 68, 172, True])
+test.append(["Maria", 19, "Female", 56, 162, True])
+````
+
+### Force Quotations on Strings
+```python
+test = Maguro("temp/9-tab-separated-values.tsv", delimiter="\t", newline="\n", quote_strings=True)
+test.clear()
+test.append(["a", "b", "c", "d", "e"])
+test.append(["1", "2", "3", "4", "5"])
+test.append([1, 2, 3, 4, 5])
+
+print(test.unpack())
+````
+
+### Convert (""Yes", "y", "No", "n") to Boolean data type (run-time only)
+```python
+test = Maguro("temp/04-booleans.csv", delimiter=",", newline="\n", allow_boolean=True)
+````

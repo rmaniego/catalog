@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: maguro
-Version: 1.0.1
+Version: 1.0.2
 Summary: Maguro is a lightweight manager for delimiter-separated values.
 Home-page: https://github.com/rmaniego/maguro
 Author: Rodney Maniego Jr.

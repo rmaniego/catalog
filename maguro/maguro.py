@@ -3,243 +3,283 @@
     Maguro
 """
 
-import statistics
+import shlex
+import threading
 
-class Maguro:
-    def __init__(self, filepath="", delimiter=",", encoding="utf-8", autosave=True):
-        """
-            Read and prepare the list object.
-            ...
-            Parameters
-            ---
-            filepath: string
-                path to save the file
-            delimiter: string
-                any string to delimit values
-            autosave: boolean
-                save list to file after every update
-        """
-        self.filepath = filepath
-        self.delimiter = delimiter
-        self.autosave = autosave
-        self.encoding = encoding
-        self.data = read(filepath, delimiter, encoding)
+class Maguro(list):
+    """ Parse DSV files into a 2D Python array. """
+    def __init__(self, filepath=None, delimiter=",", newline=None, encoding="utf-8", autosave=True, quote_strings=False, allow_boolean=False, NaN="NaN"):
+        self._lock = threading.RLock()
+        with self._lock:
+            self._filepath = filepath
+            self._delimiter = delimiter
+            self._newline = newline
+            self._autosave = autosave
+            self._quote_strings = quote_strings
+            self._encoding = encoding
+            self._allow_boolean = allow_boolean
+            self._packed = None
+            self._NaN = NaN # None
+            self.extend(_read_file(self))
     
-    def load(self, data):
-        """
-            Load and replace existing data with new list.
-            ...
-            Parameters
-            ---
-            data: list or iterable object
-                a set of items that can be converted into a list
-        """
-        if iterable(data):
-            self.data = list(data)
-        if self.autosave:
-            write(self.filepath, self.data, self.delimiter, self.encoding)
-        return self
+    def __setitem__(self, index, item):
+        with self._lock:
+            self._packed = None
+            if isinstance(item, (list, set, tuple)):
+                item = list(item)
+            super(Maguro, self).__setitem__(index, item)
+            
+            autosave = isinstance(self._autosave, bool) and bool(self._autosave)
+            if autosave:
+                _write_file(self)
     
-    def append(self, item):
-        """ Append new item """
-        self.data.append(str(item))
-        if self.autosave:
-            write(self.filepath, self.data, self.delimiter, self.encoding)
-        return self
+    def append(self, item, unique=False):
+        with self._lock:
+            self._packed = None
+            if isinstance(item, (list, set, tuple)):
+                item = list(item)
+            if not unique or (item not in self):
+                super(Maguro, self).append(item)
+
+            autosave = isinstance(self._autosave, bool) and bool(self._autosave)
+            if autosave:
+                _write_file(self)
+    
+    def clear(self):
+        with self._lock:
+            self._packed = None
+            super(Maguro, self).clear()
+
+            autosave = isinstance(self._autosave, bool) and bool(self._autosave)
+            if autosave:
+                _write_file(self)
+    
+    def extend(self, iterable):
+        with self._lock:
+            self._packed = None
+            super(Maguro, self).extend(iterable)
+
+            autosave = isinstance(self._autosave, bool) and bool(self._autosave)
+            if autosave:
+                _write_file(self)
     
     def insert(self, index, item):
-        """ Insert at index """
-        try:
-            self.data.insert(int(index), str(item))
-            if self.autosave:
-                write(self.filepath, self.data, self.delimiter, self.encoding)
-        except:
-            pass
-        return self
+        with self._lock:
+            self._packed = None
+            super(Maguro, self).insert(index, item)
+
+            autosave = isinstance(self._autosave, bool) and bool(self._autosave)
+            if autosave:
+                _write_file(self)
     
-    def extend(self, collection):
-        """ Extend the list """
-        try:
-            self.data.extend(list(collection))
-            if self.autosave:
-                write(self.filepath, self.data, self.delimiter, self.encoding)
-        except:
-            pass
-        return self
+    def pop(self, pos):
+        with self._lock:
+            self._packed = None
+            temp = super(Maguro, self).pop(pos)
+
+            autosave = isinstance(self._autosave, bool) and bool(self._autosave)
+            if autosave:
+                _write_file(self)
+            return temp
     
-    def remove_duplicates(self):
-        """ Remove duplicate items """
-        try:
-            self.data = list(set(self.data))
-            if self.autosave:
-                write(self.filepath, self.data, self.delimiter, self.encoding)
-        except:
-            pass
-        return self
+    def remove(self, item):
+        with self._lock:
+            self._packed = None
+            super(Maguro, self).remove(item)
+
+            autosave = isinstance(self._autosave, bool) and bool(self._autosave)
+            if autosave:
+                _write_file(self)
+    
+    def reverse(self):
+        with self._lock:
+            self._packed = None
+            super(Maguro, self).reverse()
+
+            autosave = isinstance(self._autosave, bool) and bool(self._autosave)
+            if autosave:
+                _write_file(self)
+    
+    def sort(self):
+        with self._lock:
+            self._packed = None
+            super(Maguro, self).sort()
+
+            autosave = isinstance(self._autosave, bool) and bool(self._autosave)
+            if autosave:
+                _write_file(self)
+    
+    def load(self, iterable):
+        """ Replace old data with new contents. """
+        with self._lock:
+            self._packed = None
+            if isinstance(iterable, (list, set, tuple)):
+                try:
+                    self.clear()
+                    self.extend(list(iterable))
+
+                    autosave = isinstance(self._autosave, bool) and bool(self._autosave)
+                    if autosave:
+                        _write_file(self)
+                except:
+                    pass
+    
+    def distinct(self):
+        """ Remove duplicates on lists with hashable contents. """
+        with self._lock:
+            self._packed = None
+            try:
+                temp = list(set(self))
+                self.clear()
+                self.extend(temp)
+
+                autosave = isinstance(self._autosave, bool) and bool(self._autosave)
+                if autosave:
+                    _write_file(self)
+            except:
+                pass
+    
+    def is_empty(self):
+        """ Check if list object is empty or not. """
+        with self._lock:
+            return not len(self)
+
+    def pack(self):
+        """ Return delimiter-separates values in string representation. """
+        with self._lock:
+            self._packed = _pack(self)
+            return self._packed
     
     def unpack(self):
         """ Return raw list object """
-        try:
-            return self.data
-        except:
-            return []
+        with self._lock:
+            return list(self)
     
-    def pack(self):
-        """ Return formmatted string """
-        try:
-            formatted = list([str(x) for x in self.data])
-            return f"{self.delimiter}".join(formatted)
-        except:
-            return ""
-    
-    def pop(self, index):
-        try:
-            self.data.pop(int(index))
-            if self.autosave:
-                write(self.filepath, self.data, self.delimiter, self.encoding)
-        except:
-            pass
-        return self
-    
-    def remove(self, item):
-        try:
-            self.data = [x for x in self.data if x != str(item)]
-            if self.autosave:
-                write(self.filepath, self.data, self.delimiter, self.encoding)
-        except:
-            pass
-        return self
-    
-    def sort(self, reverse=False):
-        """ Sort the list, with optional reversal """
-        self.data.sort(reverse=reverse)
-        return self
-    
-    def reverse(self):
-        """ Reverse the list """
-        self.data.reverse()
-        return self
-    
-    def items(self, sort=False, reverse=True):
-        """ Loop over items """
-        dataset = self.data
-        try:
-            if sort:
-                dataset.sort(reverse)
-        except:
-            pass
-        for item in dataset:
-            yield item
-    
-    def contains(self, item):
-        """
-            Gets the value of the search key from the list.
-            ...
-            Parameters
-            ---
-            item: string
-                item inside the list
-                
-        """
-        if str(item) in self.data:
-            return True
-        return False
-    
-    def is_empty(self):
-        """ Check if list is empty """
-        if len(self.data) == 0:
-            return True
-        return False
-    
-    def is_not_empty(self):
-        """ Check if list is not empty """
-        if len(self.data) == 0:
-            return False
-        return True
-    
-    def count(self):
-        """ Count the number of entries in the list """
-        return len(self.data)
-    
-    def mean(self, precision=-1, fallback=None):
-        """ Get the average of a numeric dataset """
-        try:
-            return precise(statistics.mean(self.data), precision)
-        except:
-            return fallback
-    
-    def median(self, precision=-1, fallback=None):
-        """ Get the middle value of a numeric dataset """
-        try:
-            return precise(statistics.median(self.data), precision)
-        except:
-            return fallback
-    
-    def mode(self, precision=-1, fallback=None):
-        """ Get the most frequent value in a numeric dataset """
-        try:
-            return precise(statistics.mode(self.data), precision)
-        except:
-            return fallback
-    
-    def dataset_range(self, precision=-1, fallback=None):
-        """ Get the the difference of the min and max value of a numeric dataset """
-        try:
-            number = (max(self.data) - min(self.data))
-            return precise(number, precision)
-        except:
-            return fallback
-    
-    def minimum(self, precision=-1, fallback=None):
-        """ Get the the minimum value of a numeric dataset """
-        try:
-            return precise(min(self.data), precision)
-        except:
-            return fallback
-    
-    def maximum(self, precision=-1, fallback=None):
-        """ Get the the minimum value of a numeric dataset """
-        try:
-            return precise(max(self.data), precision)
-        except:
-            return fallback
-    
-    def clear(self):
-        self.data = []
-        if self.autosave:
-            write(self.filepath, self.data, self.delimiter, self.encoding)
-        return self
+    def save(self, save_as=None):
+        """ Manual save to optimize operations. """
+        with self._lock:
+            if isinstance(save_as, str):
+                self._filepath = save_as
+            _write_file(self)
 
-def precise(number, precision=-1, fallback=None):
+def _encode_dsv_equivalent(value, separator, quote_strings):
+    """ Encode values into formatted string representations. """
+    if value is None:
+        return "null"
+    if value == "NaN":
+        return "NaN"
+    if type(value) in (int, float):
+        return value
+    if isinstance(value, bool):
+        if value:
+            return "Yes"
+        return "No"
+    formatted = f"\"{value}\""
+    if quote_strings:
+        return formatted
+    if separator is not None:
+        if separator in value:
+            return formatted
+    if " " in value:
+        return formatted
+    return value
+
+def _pack(data):
+    """ Convert list object into delimiter-separated values representation. """
+    if not isinstance(data._delimiter, str):
+        return
+    sep1 = data._delimiter
+    sep2 = None
+    if isinstance(data._newline, str):
+        sep1 = data._newline
+        sep2 = data._delimiter
+
+    formatted = []
+    quote_strings = isinstance(data._quote_strings, bool) and bool(data._quote_strings)
+    for value in list(data):
+        if sep2 is None:
+            formatted.append(str(_encode_dsv_equivalent(value, sep1, quote_strings)))
+            continue
+        temp = []
+        for part in value:
+            temp.append(str(_encode_dsv_equivalent(part, sep2, quote_strings)))
+        formatted.append(sep2.join(temp))
+    return sep1.join(formatted)
+
+def _clean_split(string, separator, allow_boolean, NaN):
+    """ Smartly split valid strings outside quuted values. """
+    formatted = string.replace(" ", "&nbsp;")
+    formatted = formatted.replace(separator, "    &tmp;")
+    parts = list(shlex.split(formatted))
+    for i in range(len(parts)):
+        temp = parts[i].replace("&nbsp;", " ").strip()
+        if "    &tmp;" in temp:
+            temp = temp.replace("    &tmp;", separator)
+        else:
+            temp = temp.replace("&tmp;", "")
+        parts[i] = _autoparse_to_data_type(temp, allow_boolean, NaN)
+    return parts
+
+def _autoparse_to_data_type(string, allow_boolean, NaN):
+    """ Decode DSV strings into equivalent Python data types. """
+    formatted = string.strip()
+    if len(formatted):
+        if formatted == "null":
+            return None
+        if formatted == "NaN":
+            return NaN
+        if allow_boolean:
+            if formatted.lower() in ("yes", "y"):
+                return True
+            if formatted.lower() in ("no", "n"):
+                return False
+        try:
+            numeric = float(formatted)
+            if not (numeric-(numeric//1)):
+                return int(numeric)
+            return numeric
+        except:
+            pass
+    return formatted
+
+def _write_file(data):
+    """ Save formatted DSV into file. """
+    if not (isinstance(data._filepath, str) and isinstance(data._encoding, str)):
+        return
+        
+    packed = data._packed
+    if not isinstance(packed, str):
+        packed = _pack(data)
+
     try:
-        if isinstance(precision, int) and 1 <= precision <= 16:
-            if precision > 0:
-                return round(number, precision)
-        if precision == 0:
-            return round(number)
+        with open(data._filepath, "w+", encoding=data._encoding) as f:
+            f.write(packed)
+    except:
+        print("MaguroWarning: Unable to update selected file.")
+
+def _read_file(data):
+    """ Read DSV file and attempt to create a list object. """
+    if not (isinstance(data._filepath, str) and isinstance(data._encoding, str)):
+        return
+    if not isinstance(data._delimiter, str):
+        return
+    sep1 = data._delimiter
+    sep2 = None
+    if isinstance(data._newline, str):
+        sep1 = data._newline
+        sep2 = data._delimiter
+
+    temp = []
+    allow_boolean = isinstance(data._allow_boolean, bool) and bool(data._allow_boolean)
+    try:
+        with open(data._filepath, "r", encoding=data._encoding) as f:
+            values = f.read().split(sep1)
+            for value in values:
+                if len(value:=value.strip()):
+                    if sep2 is not None:
+                        temp.append(_clean_split(value, sep2, allow_boolean, data._NaN))
+                        continue
+                    temp.append(_autoparse_to_data_type(value, allow_boolean, data._NaN))
     except:
         pass
-    return number
-
-def write(filepath, data, delimiter, encoding="utf-8"):
-    if filepath != "":
-        if iterable(data):
-            try:
-                with open(filepath, "w+", encoding=encoding) as file:
-                    file.write(f"{delimiter}".join(data))
-            except:
-                pass
-
-def iterable(data):
-    try:
-        it = iter(data)
-    except:
-        return False
-    return True
-
-def read(filepath, delimiter, encoding):
-    try:
-        with open(filepath, "r", encoding=encoding) as file:
-            return list(file.read().split(delimiter))
-    except:
-        return []
+    return temp
