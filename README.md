@@ -100,7 +100,32 @@ test.append([1, 2, 3, 4, 5])
 print(test.unpack())
 ````
 
-### Convert `Yes`, `y`, `No`, and `n` to Boolean data type (run-time only)
+### Convert `Yes`, `y`, `No`, and `n` to equivalent Boolean data type (run-time only)
 ```python
 test = Maguro("temp/04-booleans.csv", delimiter=",", newline="\n", allow_boolean=True)
+````
+
+### Header methods
+```python
+# Get the header
+test = Maguro("temp/12a-header.csv", delimiter=",", newline="\n", quote_strings=True, has_header=True)
+print(test.get_header())
+
+# Replace with new header
+# equivalent to: test[0] = [*]
+test = Maguro("temp/12b-header.csv", delimiter=",", newline="\n", quote_strings=True, has_header=True)
+test.set_header(["earthquakeId", "occurred_on", "latitude", "longitude", "depth", "magnitude", "calculation_method", "network_id", "place", "cause"])
+print(test[0])
+
+# Add new header
+test = Maguro("temp/12c-header.csv", delimiter=",", newline="\n", quote_strings=True)
+test.set_header(["earthquake_id", "occurred_on", "latitude", "longitude", "depth", "magnitude", "calculation_method", "network_id", "place", "cause"])
+print(test[0])
+print(test[1])
+
+# Remove header if set
+# exquivalent to: test = test[1:]
+test = Maguro("temp/13-header.csv", delimiter=",", newline="\n", quote_strings=True, has_header=True)
+test.behead()
+print(test[0])
 ````

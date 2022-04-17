@@ -134,6 +134,39 @@ print("Test:", test.unpack())
 test.load([["1", "2", "3", "4", "5"]])
 print("Test:",test.unpack())
 
-print("\nTest #11 Check existing CSVs")
+print("\nTest #11 Check existing DSVs")
 test = Maguro("temp/earthquakes.csv", delimiter=",", newline="\n", quote_strings=True)
 print(test.unpack())
+
+print("\nTest #12a Get Header")
+test = Maguro("temp/12a-header.csv", delimiter=",", newline="\n", quote_strings=True, has_header=True)
+print(test.get_header())
+
+print("\nTest #12b Replace Header")
+test = Maguro("temp/12b-header.csv", delimiter=",", newline="\n", quote_strings=True, has_header=True)
+test.set_header(["earthquakeId", "occurred_on", "latitude", "longitude", "depth", "magnitude", "calculation_method", "network_id", "place", "cause"])
+print(test[0])
+
+print("\nTest #12c Add New Header")
+test = Maguro("temp/12c-header.csv", delimiter=",", newline="\n", quote_strings=True)
+test.set_header(["earthquake_id", "occurred_on", "latitude", "longitude", "depth", "magnitude", "calculation_method", "network_id", "place", "cause"])
+print(test[0])
+print(test[1])
+
+print("\nTest #13 Remove Header if set")
+test = Maguro("temp/13-no-header.csv", delimiter=",", newline="\n", quote_strings=True, has_header=True)
+test.behead()
+if len(test):
+    print(test[0])
+
+print("\nTest #14 Expand to max-length")
+test = Maguro("temp/14-expand.csv", delimiter=",", newline="\n")
+test.clear()
+test.append(["name", "age", "gender", "address"])
+test.append(["Juan", "22", "M"])
+test.append(["Pedro", "21", "M", "Mars"])
+test.append(["Maria", "18", "F", "Earth", "Blue"])
+test.append("Soledad")
+test.expand()
+print(test.pack())
+
