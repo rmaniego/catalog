@@ -6,7 +6,7 @@ with open("README.md", "r") as f:
 setuptools.setup(
     name = "maguro",
     packages = ["maguro"],
-    version = "1.1.0",
+    version = "1.1.1",
     license="MIT",
     description = "Maguro is a Python-wrapper for DSV files.",
     long_description=long_description,

@@ -215,8 +215,7 @@ def _clean_split(string, separator, allow_boolean, NaN):
         temp = parts[i].replace("&nbsp;", " ").strip()
         if "    &tmp;" in temp:
             temp = temp.replace("    &tmp;", separator)
-        else:
-            temp = temp.replace("&tmp;", "")
+        temp = temp.replace("&tmp;", "")
         parts[i] = _autoparse_to_data_type(temp, allow_boolean, NaN)
     return parts
 

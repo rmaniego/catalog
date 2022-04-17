@@ -133,3 +133,7 @@ test.append(["a", "b", "c", "d", "e"])
 print("Test:", test.unpack())
 test.load([["1", "2", "3", "4", "5"]])
 print("Test:",test.unpack())
+
+print("\nTest #11 Check existing CSVs")
+test = Maguro("temp/earthquakes.csv", delimiter=",", newline="\n", quote_strings=True)
+print(test.unpack())
