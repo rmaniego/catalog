@@ -8,11 +8,9 @@ Other behaviors are similar to a native Python list, the tutorial below only cov
 
 Maguro can now be used on your Python projects through PyPi by running pip command on a Python-ready environment.
 
-pip install maguro --upgrade
+`pip install maguro --upgrade`
 
-Current version is 1.1.0, but more updates are coming soon. Installing it will also install required packages including requests.
-
-This is compatible with Python version 3.9 or with the latest.
+Current version is 1.1.0, but more updates are coming soon. This is compatible with Python version 3.9 or with the latest.
 
 ### package import
 `from maguro import Maguro`
@@ -102,7 +100,7 @@ test.append([1, 2, 3, 4, 5])
 print(test.unpack())
 ````
 
-### Convert (""Yes", "y", "No", "n") to Boolean data type (run-time only)
+### Convert `Yes`, `y`, `No`, and `n` to Boolean data type (run-time only)
 ```python
 test = Maguro("temp/04-booleans.csv", delimiter=",", newline="\n", allow_boolean=True)
 ````
