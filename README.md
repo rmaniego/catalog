@@ -129,3 +129,16 @@ test = Maguro("temp/13-header.csv", delimiter=",", newline="\n", quote_strings=T
 test.behead()
 print(test[0])
 ````
+
+### Expand all valid child list to max-length
+```python
+test = Maguro("temp/14-expand.csv", delimiter=",", newline="\n")
+test.clear()
+test.append(["name", "age", "gender", "address"])
+test.append(["Juan", "22", "M"])
+test.append(["Pedro", "21", "M", "Mars"])
+test.append(["Maria", "18", "F", "Earth", "Blue"])
+test.append("Soledad")
+test.expand()
+print(test.pack())
+````
