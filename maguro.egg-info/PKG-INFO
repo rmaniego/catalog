@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: maguro
-Version: 1.1.0
+Version: 1.1.2
 Summary: Maguro is a Python-wrapper for DSV files.
 Home-page: https://github.com/rmaniego/maguro
 Author: Rodney Maniego Jr.
@@ -28,11 +28,9 @@ Other behaviors are similar to a native Python list, the tutorial below only cov
 
 Maguro can now be used on your Python projects through PyPi by running pip command on a Python-ready environment.
 
-pip install maguro --upgrade
+`pip install maguro --upgrade`
 
-Current version is 1.1.0, but more updates are coming soon. Installing it will also install required packages including requests.
-
-This is compatible with Python version 3.9 or with the latest.
+Current version is 1.1.0, but more updates are coming soon. This is compatible with Python version 3.9 or with the latest.
 
 ### package import
 `from maguro import Maguro`
@@ -122,8 +120,46 @@ test.append([1, 2, 3, 4, 5])
 print(test.unpack())
 ````
 
-### Convert (""Yes", "y", "No", "n") to Boolean data type (run-time only)
+### Convert `Yes`, `y`, `No`, and `n` to equivalent Boolean data type (run-time only)
 ```python
 test = Maguro("temp/04-booleans.csv", delimiter=",", newline="\n", allow_boolean=True)
+````
+
+### Header methods
+```python
+# Get the header
+test = Maguro("temp/12a-header.csv", delimiter=",", newline="\n", quote_strings=True, has_header=True)
+print(test.get_header())
+
+# Replace with new header
+# equivalent to: test[0] = [*]
+test = Maguro("temp/12b-header.csv", delimiter=",", newline="\n", quote_strings=True, has_header=True)
+test.set_header(["earthquakeId", "occurred_on", "latitude", "longitude", "depth", "magnitude", "calculation_method", "network_id", "place", "cause"])
+print(test[0])
+
+# Add new header
+test = Maguro("temp/12c-header.csv", delimiter=",", newline="\n", quote_strings=True)
+test.set_header(["earthquake_id", "occurred_on", "latitude", "longitude", "depth", "magnitude", "calculation_method", "network_id", "place", "cause"])
+print(test[0])
+print(test[1])
+
+# Remove header if set
+# exquivalent to: test = test[1:]
+test = Maguro("temp/13-header.csv", delimiter=",", newline="\n", quote_strings=True, has_header=True)
+test.behead()
+print(test[0])
+````
+
+### Expand all valid child list to max-length
+```python
+test = Maguro("temp/14-expand.csv", delimiter=",", newline="\n")
+test.clear()
+test.append(["name", "age", "gender", "address"])
+test.append(["Juan", "22", "M"])
+test.append(["Pedro", "21", "M", "Mars"])
+test.append(["Maria", "18", "F", "Earth", "Blue"])
+test.append("Soledad")
+test.expand()
+print(test.pack())
 ````
 

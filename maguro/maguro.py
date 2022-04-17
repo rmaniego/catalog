@@ -157,6 +157,7 @@ class Maguro(list):
                 if items:
                     self[0] = header
             elif header not in self:
+                self._has_header = True
                 if items:
                     self.insert(0, header)
                 else:
@@ -167,7 +168,8 @@ class Maguro(list):
         with self._lock:
             has_header = isinstance(self._has_header, bool) and bool(self._has_header)
             if has_header and len(self):
-                    self.pop(0)
+                self._has_header = False
+                self.pop(0)
     
     def expand(self):
         """ Resize all valid child lists based on current max-length. """

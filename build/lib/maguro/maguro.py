@@ -8,7 +8,7 @@ import threading
 
 class Maguro(list):
     """ Parse DSV files into a 2D Python array. """
-    def __init__(self, filepath=None, delimiter=",", newline=None, encoding="utf-8", autosave=True, quote_strings=False, allow_boolean=False, NaN="NaN"):
+    def __init__(self, filepath=None, delimiter=",", newline=None, encoding="utf-8", autosave=True, quote_strings=False, allow_boolean=False, NaN="NaN", has_header=False):
         self._lock = threading.RLock()
         with self._lock:
             self._filepath = filepath
@@ -18,6 +18,7 @@ class Maguro(list):
             self._quote_strings = quote_strings
             self._encoding = encoding
             self._allow_boolean = allow_boolean
+            self._has_header = has_header
             self._packed = None
             self._NaN = NaN # None
             self.extend(_read_file(self))
@@ -139,6 +140,51 @@ class Maguro(list):
             except:
                 pass
     
+    def get_header(self):
+        """ Returns the header if set. """
+        with self._lock:
+            has_header = isinstance(self._has_header, bool) and bool(self._has_header)
+            if has_header and len(self):
+                return list(self)[0]
+            return []
+    
+    def set_header(self, header):
+        """ Returns the header if set. """
+        with self._lock:
+            items = len(self)
+            has_header = isinstance(self._has_header, bool) and bool(self._has_header)
+            if has_header:
+                if items:
+                    self[0] = header
+            elif header not in self:
+                if items:
+                    self.insert(0, header)
+                else:
+                    self.append(header)
+    
+    def behead(self):
+        """ Quirky, remove header if set. """
+        with self._lock:
+            has_header = isinstance(self._has_header, bool) and bool(self._has_header)
+            if has_header and len(self):
+                    self.pop(0)
+    
+    def expand(self):
+        """ Resize all valid child lists based on current max-length. """
+        with self._lock:
+            if not (isinstance(self._delimiter, str) and isinstance(self._newline, str)):
+                return
+            try:
+                empty = [""]
+                max_length = max([len(x) for x in self if isinstance(x, list)])
+                for i in range(len(self)):
+                    if isinstance(self[i], list):
+                        expansion = empty * (max_length-len(self[i]))
+                        if len(expansion):
+                            self[i].extend(expansion)
+            except:
+                pass
+    
     def is_empty(self):
         """ Check if list object is empty or not. """
         with self._lock:
@@ -197,7 +243,7 @@ def _pack(data):
     formatted = []
     quote_strings = isinstance(data._quote_strings, bool) and bool(data._quote_strings)
     for value in list(data):
-        if sep2 is None:
+        if not isinstance(value, list) or sep2 is None:
             formatted.append(str(_encode_dsv_equivalent(value, sep1, quote_strings)))
             continue
         temp = []
@@ -215,8 +261,7 @@ def _clean_split(string, separator, allow_boolean, NaN):
         temp = parts[i].replace("&nbsp;", " ").strip()
         if "    &tmp;" in temp:
             temp = temp.replace("    &tmp;", separator)
-        else:
-            temp = temp.replace("&tmp;", "")
+        temp = temp.replace("&tmp;", "")
         parts[i] = _autoparse_to_data_type(temp, allow_boolean, NaN)
     return parts
 
@@ -276,7 +321,7 @@ def _read_file(data):
             values = f.read().split(sep1)
             for value in values:
                 if len(value:=value.strip()):
-                    if sep2 is not None:
+                    if sep2 is not None and (sep2 in value):
                         temp.append(_clean_split(value, sep2, allow_boolean, data._NaN))
                         continue
                     temp.append(_autoparse_to_data_type(value, allow_boolean, data._NaN))
